@@ -14,17 +14,31 @@
 </head>
 
 <body>
-    <head><%- include('partials/navbar.ejs')%></head>
     <h1>Famous Quotes</h1>
+
+    <head><%- include('partials/navbar.ejs')%></head>
+    <br>
 
     <div class="container">
         <% for (let i of rows) { %>
             <%= i.quote %> <br>
-                <%= i.firstName %>
-                    <%= i.lastName %> <br> <br>
+                <a href="#" class="authorName" authorId="<%= i.authorId %>">
+                    <%= i.firstName %>
+                        <%= i.lastName %>
+                </a> <br> <br>
 
-                        <% } %>
+                <% } %>
     </div>
+
+    <dialog id="authorDialog">
+        <div id="authorInfo">
+            <button id="close">close</button>
+            <h1 id="authorName"></h1>
+            <img id="authorPicture" width="300">
+        </div>
+    </dialog>
+
+    <script src="/js/quotes.js"></script>
 
     <%- include('partials/footer.ejs')%>
 

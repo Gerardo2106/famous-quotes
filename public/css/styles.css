@@ -3,14 +3,14 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: #648ca7;
+    background-color: #d2e1ea;
     font-family: Arial, sans-serif;
 }
 
 footer {
     text-align: center;
     color: rgb(18, 53, 83);
-    background-color: rgb(212, 211, 211);
+    background-color: rgb(255, 254, 254);
     width: 100%;
     margin: 0;
     font-style: italic;

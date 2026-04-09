@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import mysql from 'mysql2/promise';
 const app = express();
@@ -7,8 +8,8 @@ app.use(express.urlencoded({extended:true}));
 
 const pool = mysql.createPool({
     host: "qf5dic2wzyjf1x5x.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
-    user: "xnt70mg9nq2iyym7",
-    password: "i5gnb92icpg2ze49",
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PWD,
     database: "i48m7y1xfdjc232w",
     connectionLimit: 10,
     waitForConnections: true
@@ -39,7 +40,7 @@ app.get("/searchByKeyword", async(req, res) => {
    try {
         //console.log(req);
         let keyword = req.query.keyword;
-        let sql = `SELECT quote, firstName, lastName
+        let sql = `SELECT quote, firstName, lastName, authorId
                    FROM quotes
                    NATURAL JOIN authors
                    WHERE quote LIKE ? `;
@@ -62,6 +63,18 @@ app.get("/dbTest", async(req, res) => {
         res.status(500).send("Database error!");
     }
 });//dbTest
+
+app.get('/api/author/:author_Id', async (req, res) => {
+    console.log(req);
+    let authorId = req.params.author_Id; 
+   let sql = `SELECT * 
+              FROM authors
+              Where authorId = ?`;
+   const [authorinfo] = await pool.query(sql, [authorId]);              
+   res.send(authorinfo);
+});
+
+
 app.listen(3000, ()=>{
     console.log("Express server running")
 })

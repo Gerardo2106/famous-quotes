@@ -15,7 +15,7 @@
 <body>
     <h1> Quote Finder </h1>
 
-    <form action="/searchByKeyword" method="GET">
+    <form id="keywordForm" action="/searchByKeyword" method="GET">
       Keyword: <input type="text" name="keyword">
       <button> Search by Keyword </button>
     </form> <br><br>
@@ -33,6 +33,18 @@
 
       <button> Search by Authors </button>
     </form>
+
+    <script>
+      document.querySelector("#keywordForm").addEventListener("submit", validateForm);
+
+      function validateForm(){
+        let keyword = document.querySelector("input[name=keyword]").value;
+        if(keyword.length <3){
+          alert("keyword must be at least 3 characters");
+          event.preventDefault();
+        }
+      }
+    </script>
 
     <%- include('partials/footer.ejs')%>
 
