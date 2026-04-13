@@ -1,53 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 6: Quote Finder</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 6: Quote Finder</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link href="/css/styles.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+  <link href="/css/styles.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
     crossorigin="anonymous"></script>
 </head>
 </head>
+
 <body>
-    <h1> Quote Finder </h1>
+  <h1> Quote Finder </h1>
+  <!-- keyword -->
+  <form id="keywordForm" action="/searchByKeyword" method="GET">
+    Keyword: <input type="text" name="keyword">
+    <button> Search by Keyword </button>
+    <p id="keywordError" style="color: red;"></p>
+  </form> <br><br>
 
-    <form id="keywordForm" action="/searchByKeyword" method="GET">
-      Keyword: <input type="text" name="keyword">
-      <button> Search by Keyword </button>
-    </form> <br><br>
+  <!-- author -->
+  <form action="/searchByAuthor" method="GET">
+    Author:
+    <select name="authorId">
+      <option value="" selected disabled>Choose an author</option>
+      <% for (let i of authors) {%>
+        <option value="<%= i.authorId %>">
+          <%= i.firstName %>
+            <%= i.lastName %>
+        </option>
+
+        <% } %>
+    </select>
+    <button> Search by Authors </button>
+  </form>
+  <br><br>
 
 
-    <form action="/searchByAuthor" method="GET">
-      Author: 
-      <select name="authorId">
-        <% for (let i of authors) {%>
-         <option value=" <%= i.authorId %> ">
-             <%= i.firstName %> <%= i.lastName %> </option>
+  <!-- category -->
+  <form action="/searchByCategory" method="GET">
+    Category:
+    <select name="category">
+      <option value="" selected disabled>Choose a category</option>
+      <% for (let i of categories) { %>
+        <option value="<%= i.category %>">
+          <%= i.category %>
+        </option>
+        <% } %>
+    </select>
+    <button> Search by Category </button>
+  </form>
+  <br><br>
 
-        <% } %> 
-      </select>
+  <!-- likes -->
+  <form action="/searchByLikes" method="GET">
+    Likes:
+    <select name="likesRange" required>
+      <option value="" selected disabled>Choose a range</option>
+      <option value="0-9">Less than 10</option>
+      <option value="10-19">10 - 19</option>
+      <option value="20-29">20 - 29</option>
+      <option value="30-39">30 - 39</option>
+      <option value="40-49">40 - 49</option>
+      <option value="50-100">50+</option>
+    </select>
+    <button> Search by Likes </button>
+  </form>
+  <br><br>
 
-      <button> Search by Authors </button>
-    </form>
 
-    <script>
-      document.querySelector("#keywordForm").addEventListener("submit", validateForm);
 
-      function validateForm(){
-        let keyword = document.querySelector("input[name=keyword]").value;
-        if(keyword.length <3){
-          alert("keyword must be at least 3 characters");
-          event.preventDefault();
-        }
+
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    document.querySelector("#keywordForm").addEventListener("submit", validateForm);
+    function validateForm() {
+      let keyword = document.querySelector("input[name=keyword]").value;
+      if (keyword.length < 3) {
+        document.querySelector("#keywordError").textContent = "Keyword must be at least 3 characters";
+        event.preventDefault();
+      } else {
+        document.querySelector("#keywordError").textContent = "";
       }
-    </script>
+    }
+  </script>
 
-    <%- include('partials/footer.ejs')%>
+  <%- include('partials/footer.ejs')%>
 
 
 </body>
+
 </html>

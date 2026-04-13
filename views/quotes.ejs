@@ -22,19 +22,24 @@
     <div class="container">
         <% for (let i of rows) { %>
             <%= i.quote %> <br>
-                <a href="#" class="authorName" authorId="<%= i.authorId %>">
+                <a href="#" class="authorName" data-authorid="<%= i.authorId %>">
                     <%= i.firstName %>
-                        <%= i.lastName %>
+                     <%= i.lastName %>
                 </a> <br> <br>
-
                 <% } %>
     </div>
 
     <dialog id="authorDialog">
         <div id="authorInfo">
-            <button id="close">close</button>
+            <button id="close">Close</button>
+            <img id="authorPicture" width="300"> <br>
             <h1 id="authorName"></h1>
-            <img id="authorPicture" width="300">
+            <p id="authorProfession"></p>
+            <p id="authorCountry"></p>
+            <p id="authorDob"></p>
+            <p id="authorDod"></p>
+            <p id="authorSex"></p>
+            <p id="authorBiography"></p>
         </div>
     </dialog>
 

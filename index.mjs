@@ -4,7 +4,7 @@ import mysql from 'mysql2/promise';
 const app = express();
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({ extended: true }));
 
 const pool = mysql.createPool({
     host: "qf5dic2wzyjf1x5x.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
@@ -18,26 +18,32 @@ const pool = mysql.createPool({
 
 
 app.get('/', async (req, res) => {
-   let sql = `SELECT authorId, firstName, lastName
-              FROM authors
-              ORDER BY lastName`;
-   const [authors] = await pool.query(sql);              
-   res.render('home.ejs', {authors})
+    const authorsSql = `SELECT authorId, firstName, lastName
+                       FROM authors
+                       ORDER BY lastName`;
+
+    const categoriesSql = `SELECT DISTINCT category
+                          FROM quotes
+                          ORDER BY category`;
+
+    const [authors] = await pool.query(authorsSql);
+    const [categories] = await pool.query(categoriesSql);
+    res.render('home.ejs', { authors, categories });
 });
 
 
 app.get('/searchByAuthor', async (req, res) => {
-   let authorId = req.query.authorId;
-   let sql = `SELECT quote, firstName, lastName
+    let authorId = req.query.authorId;
+    let sql = `SELECT quote, firstName, lastName, authors.authorId
               FROM quotes
               NATURAL JOIN authors
               WHERE authorId = ?`;
-   const [rows] = await pool.query(sql, [authorId]);
-   res.render('quotes.ejs', {rows})
+    const [rows] = await pool.query(sql, [authorId]);
+    res.render('quotes.ejs', { rows })
 });
 
-app.get("/searchByKeyword", async(req, res) => {
-   try {
+app.get("/searchByKeyword", async (req, res) => {
+    try {
         //console.log(req);
         let keyword = req.query.keyword;
         let sql = `SELECT quote, firstName, lastName, authorId
@@ -46,7 +52,42 @@ app.get("/searchByKeyword", async(req, res) => {
                    WHERE quote LIKE ? `;
         let sqlParams = [`%${keyword}%`];
         const [rows] = await pool.query(sql, sqlParams);
-        res.render("quotes.ejs", {rows});
+        res.render("quotes.ejs", { rows });
+    } catch (err) {
+        console.error("Database error:", err);
+        res.status(500).send("Database error!");
+    }
+});
+
+app.get("/searchByCategory", async (req, res) => {
+    try {
+        let category = req.query.category;
+        let sql = `SELECT quote, firstName, lastName, authors.authorId
+                   FROM quotes
+                   NATURAL JOIN authors
+                   WHERE category = ?`;
+        const [rows] = await pool.query(sql, [category]);
+        console.log(rows);
+        res.render('quotes.ejs', { rows });
+    } catch (err) {
+        console.error("Database error:", err);
+        res.status(500).send("Database error!");
+    }
+});
+
+app.get("/searchByLikes", async (req, res) => {
+    try {
+        let range = req.query.likesRange;
+        if (!range) return res.status(400).send("Choose a likes range.");
+        let minLikes = range.split("-")[0];
+        let maxLikes = range.split("-")[1];
+        let sql = `SELECT quote, firstName, lastName, authors.authorId
+                   FROM quotes
+                   NATURAL JOIN authors
+                   WHERE likes >= ? AND likes <= ?`;
+        let sqlParams = [parseInt(minLikes), parseInt(maxLikes)];
+        const [rows] = await pool.query(sql, sqlParams);
+        res.render("quotes.ejs", { rows });
     } catch (err) {
         console.error("Database error:", err);
         res.status(500).send("Database error!");
@@ -54,8 +95,8 @@ app.get("/searchByKeyword", async(req, res) => {
 });
 
 
-app.get("/dbTest", async(req, res) => {
-   try {
+app.get("/dbTest", async (req, res) => {
+    try {
         const [rows] = await pool.query("SELECT CURDATE()");
         res.send(rows);
     } catch (err) {
@@ -66,15 +107,16 @@ app.get("/dbTest", async(req, res) => {
 
 app.get('/api/author/:author_Id', async (req, res) => {
     console.log(req);
-    let authorId = req.params.author_Id; 
-   let sql = `SELECT * 
+    let authorId = req.params.author_Id;
+    let sql = `SELECT * 
               FROM authors
               Where authorId = ?`;
-   const [authorinfo] = await pool.query(sql, [authorId]);              
-   res.send(authorinfo);
+    const [authorinfo] = await pool.query(sql, [authorId]);
+    res.send(authorinfo);
+
 });
 
 
-app.listen(3000, ()=>{
+app.listen(3000, () => {
     console.log("Express server running")
 })
